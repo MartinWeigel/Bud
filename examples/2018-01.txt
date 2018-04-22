@@ -1,0 +1,18 @@
+00  Income          2500.00         Main job
+00  Income           100.00         Side job
+00  Living         -1000.00         Rent
+00  Mobility        -300.00         Car
+00  Entertainment     -9.99         Music streamings
+05  Groceries        -51.33         Whole Foods
+01  Mobility         -24.77         Gasoline
+11  Groceries        -35.91         Whole Foods
+19  Groceries        -75.86         Whole Foods
+21  Restaurants      -34.00         Steakhouse
+21  Mobility         -33.00         Gasoline
+21  Mobility         -10.00         Car wash
+23  Restaurants      -14.00         Pancake breakfast
+24  Entertainment    -49.99         Steam game
+29  Groceries        -64.07         Whole Foods
+30  Restaurants      -32.00         Greek dinner
+30  Mobility         -21.00         Gasoline
+30  Income            52.00         Patreon supporters

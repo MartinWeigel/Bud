@@ -1,0 +1,11 @@
+00  Income          3000.00         Main job
+00  Income           100.00         Side job
+00  Living         -1200.00         Rent
+00  Mobility        -300.00         Car
+01  Mobility         -34.56         Gasoline
+01  Restaurants      -12.34         
+02  Groceries        -45.86         Whole Foods
+02  Lent              -5.00         Lunch money for Alex
+03  Groceries         -2.99         Chewing gums
+03  Lent               5.00         Alex returned money
+04  TEST_WITH_123    777.00         Testing category with a numbers
