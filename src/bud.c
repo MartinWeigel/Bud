@@ -1,16 +1,11 @@
-//******************************************************************************
-// Project: Bud
-// Version: 1.0.0 (2018-04-22)
+// Copyright 2018 Martin Weigel <mail@MartinWeigel.com>
 // License: ISC
-//
-// Developer(s):
-// - Martin Weigel <mail@MartinWeigel.com>
-//******************************************************************************
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#include "argparse.h"
+#define ARGPARSER_IMPLEMENTATION
+#include "Argparser.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -34,11 +29,6 @@ static char* CHART_BORDER_RIGHT = "▏";
 #define ANSI_COLOR_RED      "\x1b[31m"
 #define ANSI_COLOR_GREEN    "\x1b[32m"
 #define ANSI_COLOR_RESET    "\x1b[0m"
-
-static const char *const usage[] = {
-    "bud [--inverse] [--noheader] [--color] [--nochart] [--nototal] FILE",
-    NULL,
-};
 
 const int MAX_CHART_SIZE = 100;
 const int CHART_OFFSET = 15 + 1 + 9 + 1;
@@ -240,20 +230,22 @@ void calculateTotals() {
 }
 
 int main(int argc, const char **argv) {
-    struct argparse_option options[] = {
-        OPT_HELP(),
-        OPT_BOOLEAN('c', "color", &colorOutput, "display with colors"),
-        OPT_BOOLEAN('i', "inverse", &inverse, "inverse the sign of all input"),
-        OPT_BOOLEAN(0, "nochart", &nochart, "hide the chart"),
-        OPT_BOOLEAN(0, "noheader", &noheader, "hide the header"),
-        OPT_BOOLEAN(0, "nototal", &nototal, "hide the total"),
-        OPT_END(),
-    };
-
-    struct argparse argparse;
-    argparse_init(&argparse, options, usage, 0);
-    argparse_describe(&argparse, "\nBud is a simple budget manager based on plain text files.\nIf no input FILE is given, it reads from STDIN.", "");
-    argc = argparse_parse(&argparse, argc, argv);
+    // Parse arguments
+    Argparser* argparser = Argparser_new();
+    Argparser_init(argparser, (ArgparserOption[]) {
+        ARGPARSER_OPT_HELP(),
+        ARGPARSER_OPT_BOOL('c', "color", &colorOutput, "display with colors"),
+        ARGPARSER_OPT_BOOL('i', "inverse", &inverse, "inverse the sign of all input"),
+        ARGPARSER_OPT_BOOL(0, "nochart", &nochart, "hide the chart"),
+        ARGPARSER_OPT_BOOL(0, "noheader", &noheader, "hide the header"),
+        ARGPARSER_OPT_BOOL(0, "nototal", &nototal, "hide the total"),
+        ARGPARSER_OPT_END(),
+    });
+    Argparser_setUsage(argparser, "bud [--inverse] [--noheader] [--color] [--nochart] [--nototal] FILE\n");
+    Argparser_setDescription(argparser, "Bud is a simple budget manager based on plain text files.\nIf no input FILE is given, it reads from STDIN.\n");
+    argc = Argparser_parse(argparser, argc, argv);
+    Argparser_clear(argparser);
+    Argparser_delete(argparser);
 
     // Choose if reading from file or stdin
     FILE *input = chooseInput(argc, argv);

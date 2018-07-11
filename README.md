@@ -104,9 +104,9 @@ Calcuate the total for a specific category (here: *Groceries*):
 
 ## Acknowledgements
 
-This project uses the [`argparse`](https://github.com/Cofyc/argparse) library written by Yecheng Fu.
-The files *argparse.h* and *argparse.h* are included in the source directory for convenience.
-The two files licensed under the [MIT License](https://github.com/cofyc/argparse/blob/master/LICENSE).
+Bud uses the [`Argparser`](https://github.com/MartinWeigel/Argparser) library for parsing command line arguments.
+The file *argparse.h* is included in the source directory for convenience.
+It is licensed under the [MIT license](https://github.com/MartinWeigel/Argparser/blob/master/LICENSE-MIT.txt).
 
 
 ## Other Applications
