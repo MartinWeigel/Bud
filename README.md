@@ -90,11 +90,11 @@ Display all entries of the file sorted by their value:
     sort -k 3 -gr <file>
 
 Display all lines that contain a keyword (here: *Income*) from all plaintext budget files in the current folder and its subfolders:
-    
+
     ack Income
 
 Calculate the total:
-    
+
     awk '{sum = sum-$3}; END{print sum}' <file>
 
 Calcuate the total for a specific category (here: *Groceries*):

@@ -1,20 +1,20 @@
 CC = gcc
-CFLAGS += -std=c11 -Wall
+CFLAGS += -std=c11 -Wall -Wextra -pedantic -O3
 CLIBS = -lm
-FILES = $(wildcard src/*.c)
+SRCS = $(wildcard *.c)
+OBJS = $(SRCS:.c=.o)
 
-ifeq ($(OS),Windows_NT) 
-APPLICATION_NAME = bud.exe
-RM = del /Q /F
+ifeq ($(OS), Windows_NT)
+RM = del /F
+BIN = bud.exe
 else
-APPLICATION_NAME = bud
-RM = rm -rf
+RM = rm -f
+BIN = bud
 endif
 
-all: clean build
+$(BIN): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ $(CLIBS)
 
-build:
-	$(CC) $(CFLAGS) -o $(APPLICATION_NAME) $(FILES) $(CLIBS)
-
+.PHONY: clean
 clean:
-	$(RM) $(APPLICATION_NAME)
+	$(RM) $(BIN) $(OBJS)

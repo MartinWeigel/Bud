@@ -1,5 +1,18 @@
-// Copyright 2018 Martin Weigel <mail@MartinWeigel.com>
-// License: ISC
+// Copyright (C) 2019 Martin Weigel <mail@MartinWeigel.com>
+//
+// Permission to use, copy, modify, and/or distribute this software for any
+// purpose with or without fee is hereby granted, provided that the above
+// copyright notice and this permission notice appear in all copies.
+//
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+// ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+// ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+// OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+// Version: 2019-02-05
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -44,18 +57,20 @@ int noheader = 0;
 int nototal = 0;
 
 // Data structure for categories
-struct bucket {
+typedef struct bucket
+{
     char *category;
     long totalCents;
     struct bucket *nextBucket;
-};
-struct bucket* buckets;
+} bucket;
+bucket* buckets;
 
 // Track the positive and negative totals
 long positiveTotalCents = 0;
 long negativeTotalCents = 0;
 
-char *strdup (const char *s) {
+char *strdup (const char *s)
+{
     char *d = malloc(strlen(s) + 1);
     if (d != NULL) {
         strcpy(d, s);
@@ -64,13 +79,14 @@ char *strdup (const char *s) {
         return NULL;
 }
 
-FILE* chooseInput(int argc, const char **argv) {
+FILE* chooseInput(int argc, const char **argv)
+{
     FILE *input;
     if (argc <= 0) {
-        input = stdin;   
+        input = stdin;
     } else {
         input = fopen(*argv, "r");
-        
+
         if (NULL == input) {
             fprintf(stderr, "Unable to open '%s': %s\n", *argv, strerror(errno));
             exit(EXIT_FAILURE);
@@ -79,11 +95,12 @@ FILE* chooseInput(int argc, const char **argv) {
     return input;
 }
 
-void addEntryToBucket(char* category, long cents) {
+void addEntryToBucket(char* category, long cents)
+{
     struct bucket* current = buckets;
     // Try to add the money to an existing category
     while (current != NULL) {
-        if (strcmp(category, current->category) == 0) {            
+        if (strcmp(category, current->category) == 0) {
             current->totalCents = current->totalCents + cents;
             return;
         }
@@ -98,14 +115,14 @@ void addEntryToBucket(char* category, long cents) {
     buckets = newCategory;
 }
 
-void processEntry(unsigned int lineno, char* line) {
+void processEntry(unsigned int lineno, char* line)
+{
     char* day = strtok(line, SEPARATOR_CSV);
     char* category = strtok(NULL, SEPARATOR_CSV);
     char* euros = strtok(NULL, SEPARATOR_CURRENCY);
     char* cents = strtok(NULL, SEPARATOR_CSV);
 
-    if(day != NULL && category != NULL && euros != NULL && cents != NULL)
-    {
+    if(day != NULL && category != NULL && euros != NULL && cents != NULL) {
         // Concat cents and euros while respecting the sign
         long total = atoi(euros) * 100;
         if (total >= 0)
@@ -127,7 +144,8 @@ void processEntry(unsigned int lineno, char* line) {
 }
 
 // Calculate chartwidth
-int calculateChartwidth() {
+int calculateChartwidth()
+{
 #ifdef WIN32
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
@@ -142,10 +160,11 @@ int calculateChartwidth() {
 
 
 // Prints a chart if not deactivated
-void printChart(int chartWidth, float percentage, char* in, char out) {
+void printChart(int chartWidth, float percentage, char* in, char out)
+{
     float charStep = 100.0 / chartWidth;
     percentage = min(100, percentage);
-    
+
     printf("%s", CHART_BORDER_LEFT);
     for(int i=1; i <= chartWidth; i++) {
         if(percentage >= charStep * i) {
@@ -157,7 +176,8 @@ void printChart(int chartWidth, float percentage, char* in, char out) {
     printf("%s", CHART_BORDER_RIGHT);
 }
 
-void printChartOrPercent(int chartWidth, float percentage) {
+void printChartOrPercent(int chartWidth, float percentage)
+{
     if(nochart) {
         printf("%8.2f", percentage);
     } else {
@@ -165,20 +185,22 @@ void printChartOrPercent(int chartWidth, float percentage) {
     }
 }
 
-void printLine(int size) {
+void printLine(int size)
+{
     for(int i=0; i<size; i++)
         printf("%s", HORIZONTAL_LIGN);
     printf("\n");
 }
 
-void printBuckets() {
+void printBuckets(void)
+{
     int chartwidth = calculateChartwidth();
     int totalwidth = (nochart ? CHART_OFFSET + 8 : CHART_OFFSET + chartwidth + 2);
 
     if(!noheader) {
-        printf("%-15.15s %9s %8s\n", "CATEGORY", "EXPENSE", "PERCENT"); 
+        printf("%-15.15s %9s %8s\n", "CATEGORY", "EXPENSE", "PERCENT");
         printLine(totalwidth);
-    }  
+    }
 
     // Print all buckets
     struct bucket* current = buckets;
@@ -190,7 +212,7 @@ void printBuckets() {
             if(current->totalCents < 0)
                 printf(ANSI_COLOR_RED);
         }
-        
+
         printf("%-15.15s %9.2f ", current->category, current->totalCents / 100.0);
         float percentage = abs((current->totalCents * 100.0) / positiveTotalCents);
         printChartOrPercent(chartwidth, percentage);
@@ -204,7 +226,7 @@ void printBuckets() {
         printLine(totalwidth);
 
         long total = positiveTotalCents + negativeTotalCents;
-        printf("%-15.15s %9.2f ", "TOTAL", total / 100.0);    
+        printf("%-15.15s %9.2f ", "TOTAL", total / 100.0);
         float percentage = abs(negativeTotalCents * 100.0 / positiveTotalCents);
         printChartOrPercent(chartwidth, percentage);
         printf("\n");
@@ -215,12 +237,13 @@ void printBuckets() {
         printf(ANSI_COLOR_RESET);
 }
 
-void calculateTotals() {
+void calculateTotals()
+{
     positiveTotalCents = 0;
     negativeTotalCents = 0;
 
     struct bucket* current = buckets;
-    while (current != NULL) {    
+    while (current != NULL) {
         if(current->totalCents >= 0)
             positiveTotalCents += current->totalCents;
         else
@@ -229,7 +252,8 @@ void calculateTotals() {
     }
 }
 
-int main(int argc, const char **argv) {
+int main(int argc, const char **argv)
+{
     // Parse arguments
     Argparser* argparser = Argparser_new();
     Argparser_init(argparser, (ArgparserOption[]) {
