@@ -42,14 +42,7 @@ Just experiment around to find the best usage of it for your life.
 
 ## Install
 
-It is recommended to compile *Bud* by invoking `make` in the main directory.
-Compilation was tested under Debian with gcc 6.3.
-
-A restricted version of *Bud* also works directly under Windows (tested on Windows 10 with gcc 7.2).
-At the moment, the Windows version does not support colors and has no unicode output.
-For compilation, please install [mingw-w64](http://mingw-w64.org) and compile with `mingw32-make.exe`.
-
-The executable will be created in the main directory and is named `bud.exe` on Windows and otherwise `bud`.
+*Bud* can be build for different platforms using `CMake`. First, create a build folder inside the root directory (e.g. `mkdir build`). Inside the build folder, execute `cmake ../src` and use your systems build tools (e.g., `make` on Linux).
 
 
 ## Usage
